@@ -34,6 +34,7 @@ MessageProcessor.prototype.getMessage = function (messageId, cb) {
       deviceId: this.deviceId,
       temperature: data.temperature,
       humidity: data.humidity,
+      // Add additional sensor data to message
       pressure: data.pressure,
       compass: data.compass,
       accel: data.accel,

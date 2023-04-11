@@ -6,17 +6,16 @@
 
 //sense hat
 const util = require('util');
-const senseHat  = require('node-sense-hat');
+const senseHat = require('node-sense-hat');
 const imu = senseHat.Imu;
 const IMU = new imu.IMU();
 
+// Use the Sense Hat LEDs To Display When Providing Data
 //Using the standalone hw-specific library
 let matrix = require('sense-hat-led');
 //Using this library
 matrix = require('node-sense-hat').Leds;
-
 //end sensehat
-
 
 const fs = require('fs');
 const path = require('path');
@@ -56,7 +55,7 @@ function sendMessage() {
       } else {
         if (!config.simulatedData) {
           blinkLED();
-        }        
+        }
         console.log('[Device] Message sent to Azure IoT Hub');
       }
 
@@ -67,7 +66,7 @@ function sendMessage() {
 
 function onStart(request, response) {
   console.log('[Device] Trying to invoke method start(' + request.payload || '' + ')');
-    
+
   isMessageSendOn = true;
 
   response.send(200, 'Successully start sending message to cloud', function (err) {
@@ -83,7 +82,7 @@ function onStop(request, response) {
   isMessageSendOn = false;
 
   matrix.clear();
-  
+
 
   response.send(200, 'Successully stop sending message to cloud', function (err) {
     if (err) {
@@ -103,12 +102,12 @@ function receiveMessageCallback(msg) {
 }
 function blinkLED() {
   // Light up LED for 500 ms
-    const led = new gpio(config.LEDPinGPIO, 'out');
-    led.writeSync(1);
-    setTimeout(function () {
-        led.writeSync(0);
-      }, 500);
-    }
+  const led = new gpio(config.LEDPinGPIO, 'out');
+  led.writeSync(1);
+  setTimeout(function () {
+    led.writeSync(0);
+  }, 500);
+}
 
 function initClient(connectionStringParam, credentialPath) {
   var connectionString = ConnectionString.parse(connectionStringParam);
@@ -139,15 +138,16 @@ function initClient(connectionStringParam, credentialPath) {
     console.log('[Device] Using X.509 client certificate authentication');
   }
 
-  matrix.setPixels([[0,0,0],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[0,0,0],[255,255,255],[255,255,255],[185,45,45],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[185,45,45],[54,146,61],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[185,45,45],[54,146,61],[45,134,206],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[185,45,45],[54,146,61],[45,134,206],[198,200,66],[255,255,255],[255,255,255],[0,0,0],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[255,255,255],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,255,255],[255,255,255],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,255,255],[255,255,255],[0,0,0],[0,0,0]]);
-  
+  // Light Up SenseHat Pixels To Show Sending Data
+  matrix.setPixels([[0, 0, 0], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [0, 0, 0], [255, 255, 255], [255, 255, 255], [185, 45, 45], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [185, 45, 45], [54, 146, 61], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [185, 45, 45], [54, 146, 61], [45, 134, 206], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [185, 45, 45], [54, 146, 61], [45, 134, 206], [198, 200, 66], [255, 255, 255], [255, 255, 255], [0, 0, 0], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [255, 255, 255], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [255, 255, 255], [255, 255, 255], [0, 0, 0], [0, 0, 0]]);
+
 
   if (connectionString.GatewayHostName && config.iotEdgeRootCertFilePath) {
     var deviceClientOptions = {
       sa: fs.readFileSync(config.iotEdgeRootCertFilePath, 'utf-8'),
     }
 
-    client.setOptions(deviceClientOptions, function(err) {
+    client.setOptions(deviceClientOptions, function (err) {
       if (err) {
         console.error('[Device] error specifying IoT Edge root certificate: ' + err);
       }
@@ -168,7 +168,7 @@ function initClient(connectionStringParam, credentialPath) {
     return;
   }
 
- 
+
   messageProcessor = new MessageProcessor(config);
 
   try {
@@ -227,12 +227,12 @@ function initClient(connectionStringParam, credentialPath) {
   });
 })(process.argv[2]);
 
-// LOOK OUR FOR CTRL-C/INTERRUPT SIGNAL TO SWITCH OFF MATRIX
-process.on('SIGINT', function() {
-
+// LOOK OUR FOR CTRL-C/INTERRUPT SIGNAL AND SWITCH OFF PIXELS
+process.on('SIGINT', function () {
+  //Clear Pixels Now Data Sending Is Ending
   matrix.clear();
   // ALLOW 100ms FOR MATRIX TO CLEAR BEFORE EXIT
-  setTimeout(function() {
+  setTimeout(function () {
     process.exit();
   }, 100);
 

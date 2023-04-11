@@ -25,13 +25,14 @@ Sensor.prototype.read = function (callback) {
       
       //console.log("DATA" +  JSON.stringify(data))
       
-      /*
+      /* // Original Data Sent
       data.temperature = data.temperature.toFixed(4) ;
       data.humidity = data.humidity.toFixed(4);
       console.log("console log humd: " + data.humidity);
       console.log("console log temp: " + data.temperature);
       */
 
+      // Send additional sensor data
       data.temperature = data.temperature.toFixed(4);
       data.humidity = data.humidity.toFixed(4);
       data.pressure = data.pressure.toFixed(4);
@@ -52,7 +53,7 @@ Sensor.prototype.read = function (callback) {
         z: data.gyro.z.toFixed(4)
       };
       
-
+      // Output values to console
       console.log("Temperature: " + data.temperature);
       console.log("Humidity: " + data.humidity);
       
